@@ -1,0 +1,37 @@
+// ⚠️ AGREGAR ESTE ARCHIVO A TU PROYECTO NEXT.JS
+// Ruta: app/api/admin/dar-mes-gratis/route.ts
+
+import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
+import { sendTelegramMessage } from '@/lib/telegram'
+
+function checkAuth(req: Request) {
+  return req.headers.get('Authorization') === `Bearer ${process.env.ADMIN_SECRET}`
+}
+
+// POST /api/admin/dar-mes-gratis — otorga 1 mes gratis a un usuario
+export async function POST(req: Request) {
+  if (!checkAuth(req)) return NextResponse.json({ error: 'No auth' }, { status: 401 })
+
+  const { chat_id } = await req.json()
+  if (!chat_id) return NextResponse.json({ error: 'Falta chat_id' }, { status: 400 })
+
+  const { data: user, error: fetchError } = await supabase
+    .from('suscriptores')
+    .select('meses_gratis_acumulados')
+    .eq('telegram_chat_id', chat_id)
+    .single()
+
+  if (fetchError || !user) return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+
+  const { error } = await supabase
+    .from('suscriptores')
+    .update({ meses_gratis_acumulados: user.meses_gratis_acumulados + 1 })
+    .eq('telegram_chat_id', chat_id)
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  await sendTelegramMessage(chat_id, `🎁 El equipo de Los que Madrugan te regaló 1 mes gratis. ¡Seguí madrugando! Tenés ${user.meses_gratis_acumulados + 1} mes(es) gratis acumulados.`)
+
+  return NextResponse.json({ ok: true })
+}
