@@ -1,4 +1,4 @@
-const { createClient } = require('@supabase/supabase-js')
+import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -18,7 +18,7 @@ function obtenerFrase(perfil, dia, nombre) {
   return nombre ? `${nombre}, ${frase.toLowerCase()}` : frase
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {

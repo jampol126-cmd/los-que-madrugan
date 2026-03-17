@@ -1,149 +1,165 @@
-const { createClient } = require('@supabase/supabase-js')
+import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+export default async function handler(req, res) {
+  // Solo POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-async function sendTelegramMessage(chatId, text) {
-  const token = process.env.TELEGRAM_BOT_TOKEN
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
-  })
-}
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
-function generarCodigoReferido(nombre) {
-  const limpio = nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  const base = limpio.replace(/[^a-zA-Z]/g, '').toUpperCase().substring(0, 6)
-  const random = Math.floor(100 + Math.random() * 900)
-  return `${base}${random}`
-}
+    const body = req.body;
+    const message = body.message?.text;
+    const chatId = body.message?.chat?.id?.toString();
+    const name = body.message?.chat?.first_name || 'madrugador';
+    const callbackQuery = body.callback_query;
 
-module.exports = async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end()
+    if (!chatId && !callbackQuery?.message?.chat?.id) {
+      return res.json({ ok: true });
+    }
 
-  const body = req.body
-  const message = body.message?.text
-  const chatId = body.message?.chat?.id?.toString()
-  const name = body.message?.chat?.first_name || 'madrugador'
+    const targetChatId = chatId || callbackQuery?.message?.chat?.id?.toString();
+    const userName = name || callbackQuery?.message?.chat?.first_name || 'madrugador';
 
-  if (!chatId) return res.json({ ok: true })
+    // Función para enviar mensaje
+    async function sendMessage(text, replyMarkup = null) {
+      const payload = {
+        chat_id: targetChatId,
+        text: text,
+        parse_mode: 'HTML'
+      };
+      if (replyMarkup) {
+        payload.reply_markup = replyMarkup;
+      }
 
-  if (message?.startsWith('/start')) {
-    const refCode = message.split(' ')[1]?.replace('REF_', '') || null
+      await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
 
-    const { data: existing } = await supabase
-      .from('suscriptores')
-      .select('*')
-      .eq('telegram_chat_id', chatId)
-      .single()
-
-    if (!existing) {
-      const codigo = generarCodigoReferido(name)
-      const { data: newUser } = await supabase
+    // COMANDO START
+    if (message === '/start') {
+      // Verificar si ya existe
+      const { data: existing } = await supabase
         .from('suscriptores')
-        .insert({ telegram_chat_id: chatId, nombre: name, estado: 'prospecto', codigo_referido: codigo, referido_por: refCode || null })
-        .select()
-        .single()
+        .select('*')
+        .eq('telegram_chat_id', targetChatId)
+        .single();
 
-      if (refCode && newUser) {
-        const { data: invitador } = await supabase
-          .from('suscriptores').select('id, telegram_chat_id').eq('codigo_referido', refCode).single()
-        if (invitador) {
-          await supabase.from('referidos_log').insert({ invitador_id: invitador.id, invitado_id: newUser.id, estado: 'registrado' })
-          await sendTelegramMessage(invitador.telegram_chat_id, `🎉 ¡Alguien usó tu link!\n\n${name} se unió. Si paga, ambos ganan 1 mes gratis.`)
+      if (!existing) {
+        await supabase.from('suscriptores').insert({
+          telegram_chat_id: targetChatId,
+          nombre: userName,
+          estado: 'prospecto',
+          creado_en: new Date().toISOString()
+        });
+      }
+
+      // Enviar selector de perfil
+      await sendMessage(
+        `🌅 <b>Bienvenido a Los que Madrugan</b>\n\n¿Qué tipo de madrugador sos?`,
+        {
+          inline_keyboard: [
+            [
+              { text: "🏪 Dueño de tienda", callback_data: "perfil_tienda" },
+              { text: "💻 Freelancer", callback_data: "perfil_freelance" }
+            ],
+            [
+              { text: "🚀 Startup", callback_data: "perfil_startup" },
+              { text: "⚕️ Profesional", callback_data: "perfil_profesional" }
+            ]
+          ]
         }
+      );
+
+      return res.json({ ok: true });
+    }
+
+    // CALLBACKS (botones inline)
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const messageId = callbackQuery.message.message_id;
+
+      if (callbackData.startsWith('perfil_')) {
+        const perfil = callbackData.replace('perfil_', '');
+
+        await supabase
+          .from('suscriptores')
+          .update({ perfil })
+          .eq('telegram_chat_id', targetChatId);
+
+        // Editar mensaje original
+        await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/editMessageText`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: targetChatId,
+            message_id: messageId,
+            text: `✅ <b>Perfil: ${perfil.toUpperCase()}</b>\n\n¿Querés probar 3 días gratis?`,
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [[
+                { text: "🚀 Sí, iniciar trial", callback_data: "iniciar_trial" }
+              ]]
+            }
+          })
+        });
+
+        return res.json({ ok: true });
+      }
+
+      if (callbackData === 'iniciar_trial') {
+        const fechaFin = new Date();
+        fechaFin.setDate(fechaFin.getDate() + 3);
+
+        await supabase
+          .from('suscriptores')
+          .update({
+            estado: 'trial',
+            trial_fin: fechaFin.toISOString()
+          })
+          .eq('telegram_chat_id', targetChatId);
+
+        await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/editMessageText`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: targetChatId,
+            message_id: messageId,
+            text: `✅ <b>Trial activado por 3 días</b>\n\nTu primera frase llega mañana a las 6:00 AM.\n\n¿Listo para pagar? Escribí <b>PAGAR</b>`,
+            parse_mode: 'HTML'
+          })
+        });
+
+        return res.json({ ok: true });
       }
     }
 
-    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: `🌅 <b>Bienvenido a Los que Madrugan</b>\n\n¿Qué tipo de madrugador sos?`,
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: '🏪 Dueño de tienda', callback_data: 'perfil_tienda' }, { text: '💻 Freelancer', callback_data: 'perfil_freelance' }],
-            [{ text: '🚀 Startup', callback_data: 'perfil_startup' }, { text: '⚕️ Profesional', callback_data: 'perfil_profesional' }],
-          ],
-        },
-      }),
-    })
-    return res.json({ ok: true })
-  }
+    // COMANDO PAGAR
+    if (message?.toUpperCase() === 'PAGAR') {
+      const { data: user } = await supabase
+        .from('suscriptores')
+        .select('codigo_referido, perfil')
+        .eq('telegram_chat_id', targetChatId)
+        .single();
 
-  if (body.callback_query) {
-    const callback = body.callback_query.data
-    const callbackChatId = body.callback_query.message.chat.id.toString()
-    const messageId = body.callback_query.message.message_id
+      const linkPago = `${process.env.NEXT_PUBLIC_URL}/pagar?chat_id=${targetChatId}&ref=${user?.codigo_referido || ''}&perfil=${user?.perfil || 'tienda'}`;
 
-    if (callback.startsWith('perfil_')) {
-      const perfil = callback.replace('perfil_', '')
-      await supabase.from('suscriptores').update({ perfil }).eq('telegram_chat_id', callbackChatId)
-      await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/editMessageText`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: callbackChatId, message_id: messageId,
-          text: `✅ <b>Perfil: ${perfil.toUpperCase()}</b>\n\n¿Probás 3 días gratis?`, parse_mode: 'HTML',
-          reply_markup: { inline_keyboard: [[{ text: '🚀 Sí, iniciar trial', callback_data: 'iniciar_trial' }]] },
-        }),
-      })
-      return res.json({ ok: true })
+      await sendMessage(`💳 <b>Pagar suscripción</b>\n\n👉 <a href="${linkPago}">Click para pagar $19.900 COP/mes</a>\n\n🔒 Seguro vía Wompi (PSE, Tarjeta, Nequi)`);
+
+      return res.json({ ok: true });
     }
 
-    if (callback === 'iniciar_trial') {
-      const fechaFin = new Date()
-      fechaFin.setDate(fechaFin.getDate() + 3)
-      await supabase.from('suscriptores').update({ estado: 'trial', trial_fin: fechaFin.toISOString() }).eq('telegram_chat_id', callbackChatId)
-      await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/editMessageText`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: callbackChatId, message_id: messageId,
-          text: `✅ <b>Trial 3 días activado</b>\n\nTu primera frase llega mañana 6AM.\n\n¿Pagás ahora? Escribí <b>PAGAR</b>`,
-          parse_mode: 'HTML',
-        }),
-      })
-      return res.json({ ok: true })
-    }
-  }
+    return res.json({ ok: true });
 
-  if (message?.toUpperCase() === 'PAGAR') {
-    const { data: user } = await supabase.from('suscriptores').select('codigo_referido, perfil').eq('telegram_chat_id', chatId).single()
-    const linkPago = `${process.env.NEXT_PUBLIC_URL}/pagar?chat_id=${chatId}&ref=${user?.codigo_referido}&perfil=${user?.perfil || 'tienda'}`
-    await sendTelegramMessage(chatId, `💳 <b>Pagar suscripción</b>\n\n👉 <a href="${linkPago}">Click para pagar $19.900 COP/mes</a>\n\n🔒 Seguro vía Wompi`)
-    return res.json({ ok: true })
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ error: error.message });
   }
-
-  if (message?.toUpperCase() === 'REFERIDOS') {
-    const { data: user } = await supabase.from('suscriptores').select('codigo_referido, amigos_invitados, meses_gratis_acumulados').eq('telegram_chat_id', chatId).single()
-    if (user) {
-      const linkReferido = `https://t.me/${process.env.NEXT_PUBLIC_BOT_NAME}?start=REF_${user.codigo_referido}`
-      await sendTelegramMessage(chatId, `🎁 <b>Tus referidos</b>\n\n• Amigos: ${user.amigos_invitados}\n• Meses gratis: ${user.meses_gratis_acumulados}\n\n<b>Tu link:</b>\n<code>${linkReferido}</code>\n\n1 amigo pago = 1 mes gratis para ambos.`)
-    }
-    return res.json({ ok: true })
-  }
-
-  if (message?.toUpperCase() === 'MI CUENTA') {
-    const { data: user } = await supabase.from('suscriptores').select('estado, perfil, proximo_cobro, meses_gratis_acumulados, amigos_invitados, frases_enviadas, trial_fin').eq('telegram_chat_id', chatId).single()
-    if (user) {
-      const vence = user.estado === 'trial' ? user.trial_fin : user.proximo_cobro
-      const dias = vence ? Math.ceil((new Date(vence).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0
-      await sendTelegramMessage(chatId, `📊 <b>Tu cuenta</b>\n\nEstado: ${user.estado.toUpperCase()}\nPerfil: ${user.perfil}\nVence en: ${dias} días\nMeses gratis: ${user.meses_gratis_acumulados} ⭐\nAmigos: ${user.amigos_invitados}\nFrases: ${user.frases_enviadas}`)
-    }
-    return res.json({ ok: true })
-  }
-
-  if (message?.toUpperCase() === 'BAJA') {
-    await supabase.from('suscriptores').update({ estado: 'cancelado' }).eq('telegram_chat_id', chatId)
-    await sendTelegramMessage(chatId, `❌ Suscripción cancelada. Podés reactivar con PAGAR cuando quieras.`)
-    return res.json({ ok: true })
-  }
-
-  return res.json({ ok: true })
 }
