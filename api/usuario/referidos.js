@@ -1,11 +1,8 @@
-import { createClient } from '@supabase/supabase-js'
+const { createClient } = require('@supabase/supabase-js')
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
 
   const chatId = req.query.chat_id
@@ -27,7 +24,6 @@ export default async function handler(req, res) {
 
   const invitadoIds = (logs ?? []).map(l => l.invitado_id)
   let nombres = {}
-
   if (invitadoIds.length > 0) {
     const { data } = await supabase.from('suscriptores').select('id, nombre').in('id', invitadoIds)
     nombres = Object.fromEntries((data ?? []).map(i => [i.id, i.nombre]))
@@ -37,11 +33,6 @@ export default async function handler(req, res) {
     codigo_referido: user.codigo_referido,
     meses_gratis_acumulados: user.meses_gratis_acumulados,
     amigos_invitados: user.amigos_invitados,
-    referidos: (logs ?? []).map(l => ({
-      id: l.id,
-      nombre: nombres[l.invitado_id] ?? null,
-      estado: l.estado,
-      fecha_registro: l.fecha_registro,
-    })),
+    referidos: (logs ?? []).map(l => ({ id: l.id, nombre: nombres[l.invitado_id] ?? null, estado: l.estado, fecha_registro: l.fecha_registro })),
   })
 }
