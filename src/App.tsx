@@ -38,6 +38,7 @@ function App() {
         <Route path="/empezar" element={<EmpezarPage />} />
         <Route path="/pagar" element={<PagarPage />} />
         <Route path="/exito" element={<ExitoPage />} />
+        <Route path="/gracias" element={<ExitoPage />} />
         <Route path="/referidos" element={<ReferidosPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route 

@@ -1,94 +1,35 @@
-import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Lock, Loader2, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Shield, Lock, ExternalLink, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PERFILES } from '@/types';
 
-const WOMPI_PUBLIC_KEY = import.meta.env.VITE_WOMPI_PUBLIC_KEY as string;
-const WOMPI_INTEGRITY_KEY = import.meta.env.VITE_WOMPI_INTEGRITY_KEY as string;
-const SITE_URL = import.meta.env.VITE_SITE_URL as string;
-
-// $19.900 COP en centavos
-const AMOUNT_IN_CENTS = 1990000;
-const CURRENCY = 'COP';
-
-async function sha256hex(text: string): Promise<string> {
-  const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buffer))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-async function buildWompiUrl(chatId: string, perfil: string): Promise<string> {
-  const reference = `LQM_${chatId}_${Date.now()}`;
-  const redirectUrl = `${SITE_URL}/exito?chat_id=${chatId}`;
-
-  const signature = await sha256hex(
-    `${reference}${AMOUNT_IN_CENTS}${CURRENCY}${WOMPI_INTEGRITY_KEY}`
-  );
-
-  const params = new URLSearchParams({
-    'public-key': WOMPI_PUBLIC_KEY,
-    currency: CURRENCY,
-    'amount-in-cents': String(AMOUNT_IN_CENTS),
-    reference,
-    'redirect-url': redirectUrl,
-    'signature:integrity': signature,
-    'customer-data:legal-id-type': 'CC',
-  });
-
-  // Pre-llenar el perfil como metadata visible al operador
-  params.append('shipping-address:address-line-1', `Perfil: ${perfil}`);
-
-  return `https://checkout.wompi.co/p/?${params.toString()}`;
-}
-
 export default function PagarPage() {
   const [searchParams] = useSearchParams();
-  const [wompiUrl, setWompiUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
 
   const chatId = searchParams.get('chat_id') || '';
   const perfil = searchParams.get('perfil') || 'tienda';
   const refCode = searchParams.get('ref');
   const perfilData = PERFILES.find(p => p.id === perfil);
 
-  useEffect(() => {
+  const handlePagar = () => {
     if (!chatId) {
-      setError('Falta el ID de Telegram. Iniciá el proceso desde el bot.');
-      setIsLoading(false);
-      return;
-    }
-    if (!WOMPI_PUBLIC_KEY || !WOMPI_INTEGRITY_KEY) {
-      setError('Configuración de pago incompleta. Contactá al soporte.');
-      setIsLoading(false);
+      alert('Error: No se encontró tu usuario');
       return;
     }
 
-    buildWompiUrl(chatId, perfil)
-      .then(url => setWompiUrl(url))
-      .catch(() => setError('Error al preparar el pago. Intentá de nuevo.'))
-      .finally(() => setIsLoading(false));
-  }, [chatId, perfil]);
+    localStorage.setItem('pending_chat_id', chatId);
+    localStorage.setItem('pending_perfil', perfil);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0B0F17] via-[#1a1520] to-[#0B0F17] flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 text-amber-400 animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Preparando pasarela de pago...</p>
-        </div>
-      </div>
-    );
-  }
+    const referencia = `madrugador_${chatId}_${Date.now()}`;
+    window.location.href = `https://checkout.wompi.co/l/PvmnGn?reference=${referencia}`;
+  };
 
-  if (error) {
+  if (!chatId) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0B0F17] via-[#1a1520] to-[#0B0F17] flex items-center justify-center p-4">
         <div className="glass-strong rounded-3xl p-8 max-w-md w-full text-center">
-          <p className="text-red-400 mb-4">{error}</p>
+          <p className="text-red-400 mb-4">Falta el ID de Telegram. Iniciá el proceso desde el bot.</p>
           <a href="/" className="text-amber-400 hover:underline">Volver al inicio</a>
         </div>
       </div>
@@ -142,10 +83,9 @@ export default function PagarPage() {
             </div>
           )}
 
-          {/* Pay Button → redirect a Wompi hosted checkout */}
+          {/* Pay Button */}
           <Button
-            onClick={() => wompiUrl && window.location.assign(wompiUrl)}
-            disabled={!wompiUrl}
+            onClick={handlePagar}
             className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-full py-6 glow-amber"
           >
             <ExternalLink className="mr-2 h-5 w-5" />
