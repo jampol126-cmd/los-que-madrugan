@@ -2,3 +2,5 @@ api/indexnow.js
 api/limpieza-inactivos.js
 api/resumen-admin.js
 api/rss.xml.js
+backend/**
+backend-api/**

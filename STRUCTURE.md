@@ -19,6 +19,8 @@ Estas carpetas existen en el repo, pero no gobiernan la producción actual:
 
 No asumir que un cambio ahí queda desplegado en Vercel. Si se toca algo en esas carpetas, debe ser por una migración explícita o por rescate de lógica.
 
+Además, ambas carpetas están excluidas del paquete desplegado en Vercel para reducir confusión operativa.
+
 Ambas carpetas tienen archivos `LEGACY.md` para dejar esta distinción visible dentro del propio árbol.
 
 ## Reglas operativas
@@ -31,9 +33,9 @@ Ambas carpetas tienen archivos `LEGACY.md` para dejar esta distinción visible d
 
 ## Limpieza pendiente
 
-- decidir si `backend/` y `backend-api/` se archivan o se eliminan
+- decidir si `backend/` y `backend-api/` se archivan definitivamente o se eliminan
 - sacar del control de versiones cualquier archivo local sensible dentro de árboles legacy
-- consolidar contenido/marketing nuevo que hoy sigue fuera del historial limpio
+- revisar si los cambios locales dentro de `backend/app/api/*` merecen rescate hacia `api/` o descarte
 - revisar archivos top-level sueltos antes de un ordenamiento más profundo
 
 ## Endpoints retirados por duplicación

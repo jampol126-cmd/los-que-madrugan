@@ -11,6 +11,7 @@ La superficie activa desplegada en Vercel vive en:
 ## Regla operativa
 
 No asumir que cambios aqui se despliegan automaticamente.
+Esta carpeta no forma parte del paquete actual que Vercel despliega.
 
 Si se necesita rescatar logica desde este backend:
 
