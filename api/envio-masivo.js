@@ -47,13 +47,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Auth: aceptar CRON_SECRET o key de admin
+  // Auth: Vercel Cron usa Authorization: Bearer <CRON_SECRET>.
+  // Para ejecuciones manuales aceptamos el mismo secreto por query string.
   const authHeader = req.headers.authorization;
   const { key } = req.query;
-  
-  const isAuthorized = 
-    authHeader === `Bearer ${process.env.CRON_SECRET}` || 
-    key === 'admin2025';
+
+  const expectedSecret = process.env.CRON_SECRET;
+  const isAuthorized =
+    Boolean(expectedSecret) &&
+    (authHeader === `Bearer ${expectedSecret}` || key === expectedSecret);
   
   if (!isAuthorized) {
     return res.status(401).json({ error: 'No autorizado' });

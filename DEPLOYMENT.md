@@ -66,11 +66,21 @@ Notas:
 
 Definidos en `vercel.json`:
 
-- `/api/envio-masivo?key=admin2025`
+- `/api/envio-masivo`
 - `/api/resumen-admin`
 - `/api/limpieza-inactivos`
 
 Si cambias nombres de archivos o rutas en `api/`, revisa `vercel.json` antes de desplegar.
+
+## Ejecucion manual de cron
+
+Para disparar manualmente un job protegido, usar el mismo `CRON_SECRET`:
+
+```powershell
+curl.exe -H "Authorization: Bearer TU_CRON_SECRET" "https://los-que-madrugan.vercel.app/api/envio-masivo"
+```
+
+No dejar keys hardcodeadas en `vercel.json` ni en los handlers.
 
 ## Regla importante
 

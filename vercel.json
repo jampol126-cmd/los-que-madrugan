@@ -4,7 +4,7 @@
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ],
   "crons": [
-    { "path": "/api/envio-masivo?key=admin2025", "schedule": "30 10 * * *" },
+    { "path": "/api/envio-masivo", "schedule": "30 10 * * *" },
     { "path": "/api/resumen-admin", "schedule": "0 23 * * *" },
     { "path": "/api/limpieza-inactivos", "schedule": "0 8 1 * *" }
   ]
