@@ -19,6 +19,8 @@ Estas carpetas existen en el repo, pero no gobiernan la producción actual:
 
 No asumir que un cambio ahí queda desplegado en Vercel. Si se toca algo en esas carpetas, debe ser por una migración explícita o por rescate de lógica.
 
+Ambas carpetas tienen archivos `LEGACY.md` para dejar esta distinción visible dentro del propio árbol.
+
 ## Reglas operativas
 
 1. Si el frontend consume una ruta, esa ruta debe existir en `api/`.
@@ -29,5 +31,6 @@ No asumir que un cambio ahí queda desplegado en Vercel. Si se toca algo en esas
 ## Limpieza pendiente
 
 - decidir si `backend/` y `backend-api/` se archivan o se eliminan
+- sacar del control de versiones cualquier archivo local sensible dentro de árboles legacy
 - consolidar contenido/marketing nuevo que hoy sigue fuera del historial limpio
 - revisar archivos top-level sueltos antes de un ordenamiento más profundo
