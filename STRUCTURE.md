@@ -27,6 +27,7 @@ Ambas carpetas tienen archivos `LEGACY.md` para dejar esta distinción visible d
 2. No agregar nuevos cron jobs sin reflejarlos en `vercel.json`.
 3. No guardar secretos en archivos versionados.
 4. No volver a trackear `dist/` ni `.env`.
+5. Evitar endpoints duplicados o contratos alternos si ya existe una ruta activa equivalente.
 
 ## Limpieza pendiente
 
@@ -34,3 +35,15 @@ Ambas carpetas tienen archivos `LEGACY.md` para dejar esta distinción visible d
 - sacar del control de versiones cualquier archivo local sensible dentro de árboles legacy
 - consolidar contenido/marketing nuevo que hoy sigue fuera del historial limpio
 - revisar archivos top-level sueltos antes de un ordenamiento más profundo
+
+## Endpoints retirados por duplicación
+
+Estos endpoints se consideran contratos viejos y no deben volver a introducirse:
+
+- `api/admin.js`
+- `api/referidos.js`
+
+La superficie vigente usa rutas separadas bajo:
+
+- `api/admin/*`
+- `api/usuario/referidos.js`
