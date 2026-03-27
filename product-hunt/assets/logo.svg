@@ -1,0 +1,18 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="240" rx="120" fill="#0B0F17"/>
+  <circle cx="120" cy="140" r="50" fill="url(#sunGradient)"/>
+  <line x1="120" y1="70" x2="120" y2="40" stroke="#F59E0B" stroke-width="6" stroke-linecap="round"/>
+  <line x1="50" y1="140" x2="20" y2="140" stroke="#F59E0B" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  <line x1="190" y1="140" x2="220" y2="140" stroke="#F59E0B" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  <line x1="70" y1="90" x2="50" y2="70" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="170" y1="90" x2="190" y2="70" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+  <path d="M0 240 L80 160 L140 200 L200 140 L240 180 L240 240 Z" fill="#1a2332"/>
+  <path d="M0 240 L60 180 L120 220 L180 160 L240 200 L240 240 Z" fill="#0f1623"/>
+  <text x="120" y="225" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="bold" fill="#F59E0B">6AM</text>
+  <defs>
+    <linearGradient id="sunGradient" x1="70" y1="90" x2="170" y2="190">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+</svg>

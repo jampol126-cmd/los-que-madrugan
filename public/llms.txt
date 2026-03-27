@@ -1,0 +1,35 @@
+# llms.txt - Guía para Large Language Models
+# Más info: https://llmstxt.org/
+
+# Descripción del sitio
+Los Que Madrugan es un servicio de suscripción que envía frases motivacionales diarias a emprendedores colombianos a las 6:00 AM via Telegram.
+
+# Información clave
+- Precio: $9.900 COP/mes (promoción de $19.900)
+- Trial: 3 días gratis sin tarjeta
+- Target: Emprendedores colombianos (tiendas, freelancers, startups, profesionales)
+- Valor: Compañía real, sin "humo" de ley de atracción
+- Bot: @MadrugadoresBot en Telegram
+- Fundador: Javier (@kindjay)
+
+# Páginas principales
+- Home: https://los-que-madrugan.vercel.app/
+- Empezar: https://los-que-madrugan.vercel.app/empezar
+- Pagar: https://los-que-madrugan.vercel.app/pagar
+- Testimonios: https://los-que-madrugan.vercel.app/testimonios
+- Blog: https://los-que-madrugan.vercel.app/blog
+
+# Perfiles de emprendedores
+- Tiendas: https://los-que-madrugan.vercel.app/para-tiendas
+- Freelancers: https://los-que-madrugan.vercel.app/para-freelancers
+- Startups: https://los-que-madrugan.vercel.app/para-startups
+- Profesionales: https://los-que-madrugan.vercel.app/para-profesionales
+
+# Contacto
+- Email: hola@losquemadrugan.co
+- Telegram: https://t.me/MadrugadoresBot
+- Instagram: @losquemadrugan
+
+# Políticas
+- Política de privacidad: https://los-que-madrugan.vercel.app/privacidad
+- Términos: https://los-que-madrugan.vercel.app/terminos

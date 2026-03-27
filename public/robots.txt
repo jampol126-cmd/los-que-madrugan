@@ -1,0 +1,61 @@
+User-agent: *
+Allow: /
+
+# AI Crawlers - Permitir acceso para indexación en motores de IA
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Crawlers tradicionales
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# Sitemaps
+Sitemap: https://los-que-madrugan.vercel.app/sitemap.xml
+Sitemap: https://los-que-madrugan.vercel.app/sitemap-google.xml
+
+# Rutas privadas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /dashboard/

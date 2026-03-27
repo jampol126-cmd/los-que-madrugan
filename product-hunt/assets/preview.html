@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Hunt Assets Preview - Los Que Madrugan</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0B0F17;
+      color: white;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    h1 span {
+      color: #F59E0B;
+    }
+    .subtitle {
+      text-align: center;
+      color: #94A3B8;
+      margin-bottom: 50px;
+    }
+    .section {
+      margin-bottom: 60px;
+    }
+    .section h2 {
+      margin-bottom: 20px;
+      color: #F59E0B;
+    }
+    .section p {
+      color: #94A3B8;
+      margin-bottom: 20px;
+    }
+    .logo-preview {
+      width: 240px;
+      height: 240px;
+      background: #0B0F17;
+      border: 2px solid #F59E0B;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    .logo-preview svg {
+      width: 100%;
+      height: 100%;
+    }
+    .gallery-preview {
+      display: grid;
+      gap: 20px;
+    }
+    .gallery-item {
+      background: #1a2332;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+    .gallery-item h3 {
+      padding: 15px;
+      background: #0f1623;
+      font-size: 14px;
+    }
+    .gallery-item iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+    }
+    .cta {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      border-radius: 20px;
+      margin-top: 40px;
+    }
+    .cta h2 {
+      color: #0B0F17;
+      margin-bottom: 15px;
+    }
+    .cta p {
+      color: #0B0F17;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    .cta a {
+      display: inline-block;
+      background: #0B0F17;
+      color: #F59E0B;
+      padding: 15px 30px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Product Hunt Assets <span>Preview</span></h1>
+  <p class="subtitle">Los Que Madrugan - Visualización de assets generados</p>
+
+  <div class="section">
+    <h2>🎨 Logo (240x240px)</h2>
+    <p>Subir como PNG en Product Hunt. El SVG está en logo.svg</p>
+    <div class="logo-preview">
+      <svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="240" height="240" rx="120" fill="#0B0F17"/>
+        <circle cx="120" cy="140" r="50" fill="url(#sunGradient)"/>
+        <line x1="120" y1="70" x2="120" y2="40" stroke="#F59E0B" stroke-width="6" stroke-linecap="round"/>
+        <line x1="50" y1="140" x2="20" y2="140" stroke="#F59E0B" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+        <line x1="190" y1="140" x2="220" y2="140" stroke="#F59E0B" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+        <line x1="70" y1="90" x2="50" y2="70" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+        <line x1="170" y1="90" x2="190" y2="70" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+        <path d="M0 240 L80 160 L140 200 L200 140 L240 180 L240 240 Z" fill="#1a2332"/>
+        <path d="M0 240 L60 180 L120 220 L180 160 L240 200 L240 240 Z" fill="#0f1623"/>
+        <text x="120" y="225" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="bold" fill="#F59E0B">6AM</text>
+        <defs>
+          <linearGradient id="sunGradient" x1="70" y1="90" x2="170" y2="190">
+            <stop offset="0%" stop-color="#FCD34D"/>
+            <stop offset="100%" stop-color="#F59E0B"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🖼️ Imágenes de Galería (1270x760px)</h2>
+    <p>Abrir cada HTML en Chrome, hacer screenshot y guardar como PNG</p>
+    
+    <div class="gallery-preview">
+      <div class="gallery-item">
+        <h3>1. Hero - Value Proposition</h3>
+        <iframe src="gallery-1-hero.html"></iframe>
+      </div>
+      <div class="gallery-item">
+        <h3>2. How It Works - 3 pasos</h3>
+        <iframe src="gallery-2-how-it-works.html"></iframe>
+      </div>
+      <div class="gallery-item">
+        <h3>3. Social Proof - Stats y Testimonios</h3>
+        <iframe src="gallery-3-social-proof.html"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>🚀 Listo para lanzar</h2>
+    <p>Abrir LAUNCH-CHECKLIST.md para el paso a paso</p>
+    <a href="LAUNCH-CHECKLIST.md">Ver Checklist</a>
+  </div>
+</body>
+</html>
