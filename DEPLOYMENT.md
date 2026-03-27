@@ -17,6 +17,16 @@ Este repo ya esta enlazado a Vercel mediante `.vercel/project.json`:
 
 - `projectName`: `los-que-madrugan`
 
+## Límite del plan Hobby
+
+El proyecto corre en Vercel Hobby, que tiene un límite de 12 Serverless Functions por deployment.
+
+Para no romper despliegues:
+
+- la superficie crítica se mantiene en `api/`
+- algunas funciones auxiliares se excluyen del deploy mediante `.vercelignore`
+- no agregar nuevas funciones serverless sin revisar primero el conteo total
+
 ## Desarrollo local
 
 Desde `C:\LosQueMadrugan`:
