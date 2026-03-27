@@ -1,24 +1,38 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+import { handleOptions, requireAdminAuth, sendTelegramMessage, supabase } from '../_lib/common.js';
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.method !== 'POST') return res.status(405).end()
-  if (req.headers['authorization'] !== `Bearer ${process.env.ADMIN_SECRET}`) return res.status(401).json({ error: 'No auth' })
+  if (handleOptions(req, res)) return;
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
+  if (!requireAdminAuth(req, res)) return;
 
-  const { chat_id } = req.body
-  if (!chat_id) return res.status(400).json({ error: 'Falta chat_id' })
+  try {
+    const { chat_id } = req.body;
+    if (!chat_id) return res.status(400).json({ error: 'Se requiere chat_id' });
 
-  const { data: user, error } = await supabase.from('suscriptores').select('meses_gratis_acumulados').eq('telegram_chat_id', chat_id).single()
-  if (error || !user) return res.status(404).json({ error: 'Usuario no encontrado' })
+    const { data: user, error: userError } = await supabase
+      .from('suscriptores')
+      .select('meses_gratis_acumulados')
+      .eq('telegram_chat_id', chat_id)
+      .single();
 
-  await supabase.from('suscriptores').update({ meses_gratis_acumulados: user.meses_gratis_acumulados + 1 }).eq('telegram_chat_id', chat_id)
+    if (userError || !user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
-  await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id, text: `🎁 El equipo te regaló 1 mes gratis. Tenés ${user.meses_gratis_acumulados + 1} mes(es) acumulados.` }),
-  })
+    const nuevosMeses = (user.meses_gratis_acumulados || 0) + 1;
+    const { error } = await supabase
+      .from('suscriptores')
+      .update({ meses_gratis_acumulados: nuevosMeses })
+      .eq('telegram_chat_id', chat_id);
 
-  return res.json({ ok: true })
+    if (error) throw error;
+
+    await sendTelegramMessage(
+      chat_id,
+      `🎁 El equipo de Los que Madrugan te regaló 1 mes gratis. Tenés ${nuevosMeses} mes(es) acumulados.`
+    );
+
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    console.error('Error dar-mes-gratis:', error);
+    return res.status(500).json({ error: error.message });
+  }
 }

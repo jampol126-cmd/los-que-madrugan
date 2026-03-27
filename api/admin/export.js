@@ -1,20 +1,46 @@
-import { createClient } from '@supabase/supabase-js'
+import { handleOptions, requireAdminAuth, supabase } from '../_lib/common.js';
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+function escapeCsv(value) {
+  const stringValue = value == null ? '' : String(value);
+  if (/[",\n]/.test(stringValue)) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+  return stringValue;
+}
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.headers['authorization'] !== `Bearer ${process.env.ADMIN_SECRET}`) return res.status(401).json({ error: 'No auth' })
+  if (handleOptions(req, res)) return;
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
+  if (!requireAdminAuth(req, res)) return;
 
-  const { data: users } = await supabase
-    .from('suscriptores')
-    .select('nombre, email, telefono, estado, perfil, creado_en, frases_enviadas, amigos_invitados')
+  try {
+    const { data, error } = await supabase
+      .from('suscriptores')
+      .select('nombre, email, telefono, estado, perfil, creado_en, frases_enviadas, amigos_invitados');
 
-  const headers = ['Nombre', 'Email', 'Telefono', 'Estado', 'Perfil', 'Fecha Registro', 'Frases', 'Referidos']
-  const rows = (users ?? []).map(u => [u.nombre, u.email, u.telefono, u.estado, u.perfil, u.creado_en, u.frases_enviadas, u.amigos_invitados])
-  const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
+    if (error) throw error;
 
-  res.setHeader('Content-Type', 'text/csv')
-  res.setHeader('Content-Disposition', 'attachment; filename="madrugadores.csv"')
-  return res.send(csv)
+    const headers = ['Nombre', 'Email', 'Telefono', 'Estado', 'Perfil', 'Fecha Registro', 'Frases', 'Referidos'];
+    const rows = (data || []).map((row) => [
+      row.nombre,
+      row.email,
+      row.telefono,
+      row.estado,
+      row.perfil,
+      row.creado_en,
+      row.frases_enviadas,
+      row.amigos_invitados,
+    ]);
+
+    const csv = [headers, ...rows]
+      .map((row) => row.map(escapeCsv).join(','))
+      .join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="madrugadores.csv"');
+    return res.status(200).send(csv);
+  } catch (error) {
+    console.error('Error export:', error);
+    return res.status(500).json({ error: error.message });
+  }
 }

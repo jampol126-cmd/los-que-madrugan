@@ -1,16 +1,18 @@
+import { handleOptions, requireAdminAuth, sendTelegramMessage } from '../_lib/common.js';
+
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.method !== 'POST') return res.status(405).end()
-  if (req.headers['authorization'] !== `Bearer ${process.env.ADMIN_SECRET}`) return res.status(401).json({ error: 'No auth' })
+  if (handleOptions(req, res)) return;
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
+  if (!requireAdminAuth(req, res)) return;
 
-  const { chat_id, mensaje } = req.body
-  if (!chat_id || !mensaje) return res.status(400).json({ error: 'Falta chat_id o mensaje' })
+  try {
+    const { chat_id, mensaje } = req.body;
+    if (!chat_id || !mensaje) return res.status(400).json({ error: 'Se requiere chat_id y mensaje' });
 
-  const r = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id, text: `📢 <b>Mensaje del equipo:</b>\n\n${mensaje}`, parse_mode: 'HTML' }),
-  })
-
-  if (!r.ok) return res.status(500).json({ error: 'No se pudo enviar' })
-  return res.json({ ok: true })
+    await sendTelegramMessage(chat_id, `📢 <b>Mensaje del equipo:</b>\n\n${mensaje}`);
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    console.error('Error enviar-mensaje:', error);
+    return res.status(500).json({ error: error.message });
+  }
 }

@@ -1,33 +1,62 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+import { handleOptions, requireAdminAuth, supabase } from '../_lib/common.js';
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.headers['authorization'] !== `Bearer ${process.env.ADMIN_SECRET}`) return res.status(401).json({ error: 'No auth' })
+  if (handleOptions(req, res)) return;
+  if (!requireAdminAuth(req, res)) return;
 
-  if (req.method === 'GET') {
-    const perfil = req.query.perfil || 'tienda'
-    const { data } = await supabase.from('frases_banco').select('*').eq('perfil', perfil).order('creada_en')
-    return res.json({ frases: data })
-  }
-  if (req.method === 'POST') {
-    const { perfil, texto } = req.body
-    const { data } = await supabase.from('frases_banco').insert({ perfil, texto }).select().single()
-    return res.json({ frase: data })
-  }
-  if (req.method === 'PUT') {
-    const { id, texto, activa } = req.body
-    const updates = { updated_at: new Date().toISOString() }
-    if (texto !== undefined) updates.texto = texto
-    if (activa !== undefined) updates.activa = activa
-    const { data } = await supabase.from('frases_banco').update(updates).eq('id', id).select().single()
-    return res.json({ frase: data })
-  }
-  if (req.method === 'DELETE') {
-    await supabase.from('frases_banco').delete().eq('id', req.query.id)
-    return res.json({ ok: true })
-  }
+  try {
+    if (req.method === 'GET') {
+      const { perfil = 'tienda' } = req.query;
+      const { data, error } = await supabase
+        .from('frases_banco')
+        .select('*')
+        .eq('perfil', perfil)
+        .order('creada_en');
 
-  return res.status(405).end()
+      if (error) throw error;
+      return res.status(200).json({ frases: data || [] });
+    }
+
+    if (req.method === 'POST') {
+      const { perfil, texto } = req.body;
+      const { data, error } = await supabase
+        .from('frases_banco')
+        .insert({ perfil, texto })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return res.status(200).json({ frase: data });
+    }
+
+    if (req.method === 'PUT') {
+      const { id, texto, activa } = req.body;
+      const updates = {};
+      if (texto !== undefined) updates.texto = texto;
+      if (activa !== undefined) updates.activa = activa;
+      updates.updated_at = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .from('frases_banco')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return res.status(200).json({ frase: data });
+    }
+
+    if (req.method === 'DELETE') {
+      const { id } = req.query;
+      const { error } = await supabase.from('frases_banco').delete().eq('id', id);
+      if (error) throw error;
+      return res.status(200).json({ ok: true });
+    }
+
+    return res.status(405).json({ error: 'Método no permitido' });
+  } catch (error) {
+    console.error('Error frases:', error);
+    return res.status(500).json({ error: error.message });
+  }
 }

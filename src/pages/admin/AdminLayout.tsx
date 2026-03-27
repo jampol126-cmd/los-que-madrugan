@@ -5,8 +5,6 @@ import {
   LayoutDashboard, 
   MessageSquare, 
   Users, 
-  Gift, 
-  Settings, 
   LogOut, 
   Menu
 } from 'lucide-react';
@@ -20,8 +18,6 @@ const sidebarItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/admin/frases', icon: MessageSquare, label: 'Frases' },
   { path: '/admin/suscriptores', icon: Users, label: 'Suscriptores' },
-  { path: '/admin/referidos', icon: Gift, label: 'Referidos' },
-  { path: '/admin/configuracion', icon: Settings, label: 'Configuración' },
 ];
 
 function Sidebar({ className, onItemClick }: { className?: string; onItemClick?: () => void }) {
