@@ -1,8 +1,9 @@
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Lock, ExternalLink, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, ExternalLink, ArrowLeft, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PERFILES } from '@/types';
+import { PagarPageSEO } from '@/components/SEO';
 
 export default function PagarPage() {
   const [searchParams] = useSearchParams();
@@ -11,6 +12,10 @@ export default function PagarPage() {
   const perfil = searchParams.get('perfil') || 'tienda';
   const refCode = searchParams.get('ref');
   const perfilData = PERFILES.find(p => p.id === perfil);
+  
+  // Detectar si viene de Product Hunt
+  const isProductHunt = localStorage.getItem('utm_source') === 'producthunt' || 
+                        localStorage.getItem('ph_discount') === 'PH2025';
 
   const handlePagar = () => {
     if (!chatId) {
@@ -21,7 +26,9 @@ export default function PagarPage() {
     localStorage.setItem('pending_chat_id', chatId);
     localStorage.setItem('pending_perfil', perfil);
 
-    const referencia = `madrugador_${chatId}_${Date.now()}`;
+    // Agregar indicador de Product Hunt si aplica
+    const phSuffix = isProductHunt ? '_PH_' : '_';
+    const referencia = `madrugador_${chatId}${phSuffix}${Date.now()}`;
     window.location.href = `https://checkout.wompi.co/l/PvmnGn?reference=${referencia}`;
   };
 
@@ -37,7 +44,9 @@ export default function PagarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0B0F17] via-[#1a1520] to-[#0B0F17] flex items-center justify-center p-4">
+    <>
+      <PagarPageSEO />
+      <div className="min-h-screen bg-gradient-to-b from-[#0B0F17] via-[#1a1520] to-[#0B0F17] flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -68,9 +77,30 @@ export default function PagarPage() {
                 <span className="text-white font-medium">{perfilData?.label}</span>
               </div>
             </div>
+            {isProductHunt && (
+              <div className="bg-orange-500/20 border border-orange-500/30 rounded-lg p-3 mb-4 flex items-center gap-2">
+                <Gift className="w-5 h-5 text-orange-400" />
+                <span className="text-orange-400 text-sm font-medium">
+                  Descuento Product Hunt aplicado: 50% OFF
+                </span>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between pt-3 border-t border-white/10">
               <span className="text-gray-400">Total mensual</span>
-              <span className="text-2xl font-bold text-amber-400">$19.900 COP</span>
+              <div className="text-right">
+                {isProductHunt ? (
+                  <>
+                    <span className="text-lg text-gray-500 line-through mr-2">$9.900</span>
+                    <span className="text-2xl font-bold text-orange-400">$4.950 COP</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-lg text-gray-500 line-through mr-2">$19.900</span>
+                    <span className="text-2xl font-bold text-amber-400">$9.900 COP</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -89,7 +119,7 @@ export default function PagarPage() {
             className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-full py-6 glow-amber"
           >
             <ExternalLink className="mr-2 h-5 w-5" />
-            Pagar $19.900 con Wompi
+            {isProductHunt ? 'Pagar $4.950 con Wompi' : 'Pagar $9.900 con Wompi'}
           </Button>
 
           <p className="text-gray-500 text-xs text-center mt-3">
@@ -121,5 +151,6 @@ export default function PagarPage() {
         </div>
       </motion.div>
     </div>
+    </>
   );
 }

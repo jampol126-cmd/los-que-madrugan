@@ -5,6 +5,14 @@ import EmpezarPage from '@/pages/empezar/EmpezarPage';
 import PagarPage from '@/pages/pagar/PagarPage';
 import ExitoPage from '@/pages/exito/ExitoPage';
 import ReferidosPage from '@/pages/referidos/ReferidosPage';
+import TestimonialsPage from '@/pages/TestimonialsPage';
+import TiendaPage from '@/pages/perfiles/TiendaPage';
+import FreelancePage from '@/pages/perfiles/FreelancePage';
+import StartupPage from '@/pages/perfiles/StartupPage';
+import ProfesionalPage from '@/pages/perfiles/ProfesionalPage';
+import BlogListPage from '@/pages/blog/BlogListPage';
+import BlogPostPage from '@/pages/blog/BlogPostPage';
+import ProductHuntPage from '@/pages/ProductHuntPage';
 import AdminLayout from '@/pages/admin/AdminLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminFrases from '@/pages/admin/frases/AdminFrases';
@@ -40,6 +48,15 @@ function App() {
         <Route path="/exito" element={<ExitoPage />} />
         <Route path="/gracias" element={<ExitoPage />} />
         <Route path="/referidos" element={<ReferidosPage />} />
+        <Route path="/testimonios" element={<TestimonialsPage />} />
+        <Route path="/para-tiendas" element={<TiendaPage />} />
+        <Route path="/para-freelancers" element={<FreelancePage />} />
+        <Route path="/para-startups" element={<StartupPage />} />
+        <Route path="/para-profesionales" element={<ProfesionalPage />} />
+        <Route path="/blog" element={<BlogListPage />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
+        <Route path="/ph" element={<ProductHuntPage />} />
+        <Route path="/producthunt" element={<ProductHuntPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route 
           path="/admin" 

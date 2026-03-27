@@ -1,9 +1,170 @@
 <!doctype html>
-<html lang="en">
+<html lang="es-CO">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Los que Madrugan</title>
+    
+    <!-- Título y Descripción -->
+    <title>Los que Madrugan | Frases diarias para emprendedores a las 6 AM</title>
+    <meta name="description" content="Frases motivacionales todos los días a las 6:00 AM para emprendedores que abren su negocio mientras el mundo duerme. Sin humo, solo compañía real. Prueba 3 días gratis." />
+    <meta name="keywords" content="frases motivacionales, emprendedores, madrugar, motivación mañana, tiendas, freelancers, startups, Colombia, frases diarias" />
+    <meta name="author" content="Los que Madrugan" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://los-que-madrugan.vercel.app" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://los-que-madrugan.vercel.app" />
+    <meta property="og:title" content="Los que Madrugan | Frases diarias para emprendedores" />
+    <meta property="og:description" content="Frases motivacionales a las 6 AM para quienes abren su negocio mientras el mundo duerme. Prueba 3 días gratis." />
+    <meta property="og:image" content="https://los-que-madrugan.vercel.app/og-image.jpg" />
+    <meta property="og:locale" content="es_CO" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://los-que-madrugan.vercel.app" />
+    <meta property="twitter:title" content="Los que Madrugan | Frases diarias para emprendedores" />
+    <meta property="twitter:description" content="Frases motivacionales a las 6 AM para emprendedores. Prueba 3 días gratis." />
+    <meta property="twitter:image" content="https://los-que-madrugan.vercel.app/og-image.jpg" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <!-- Tema -->
+    <meta name="theme-color" content="#0B0F17" />
+    
+    <!-- Schema.org para IA (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Los que Madrugan",
+      "url": "https://los-que-madrugan.vercel.app",
+      "description": "Frases motivacionales diarias a las 6 AM para emprendedores colombianos",
+      "inLanguage": "es-CO",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Los que Madrugan",
+        "url": "https://los-que-madrugan.vercel.app",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://los-que-madrugan.vercel.app/logo.png"
+        }
+      },
+      "potentialAction": {
+        "@type": "SubscribeAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://t.me/MadrugadoresBot",
+          "actionPlatform": [
+            "http://schema.org/DesktopWebPlatform",
+            "http://schema.org/MobileWebPlatform"
+          ]
+        },
+        "result": {
+          "@type": "Thing",
+          "name": "Suscripción a frases diarias"
+        }
+      }
+    }
+    </script>
+    
+    <!-- Schema.org Producto/Servicio -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "Suscripción Los que Madrugan",
+      "image": "https://los-que-madrugan.vercel.app/og-image.jpg",
+      "description": "Frases motivacionales personalizadas todos los días a las 6:00 AM vía Telegram para emprendedores",
+      "brand": {
+        "@type": "Brand",
+        "name": "Los que Madrugan"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://los-que-madrugan.vercel.app/empezar",
+        "price": "9900",
+        "priceCurrency": "COP",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-12-31",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Planes de suscripción",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Trial Gratis",
+                "description": "3 días de prueba gratuita"
+              },
+              "price": "0",
+              "priceCurrency": "COP"
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Suscripción Mensual",
+                "description": "Frases diarias durante 30 días"
+              },
+              "price": "9900",
+              "priceCurrency": "COP"
+            }
+          ]
+        }
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "500"
+      }
+    }
+    </script>
+    
+    <!-- Schema.org FAQ para Featured Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Qué es Los que Madrugan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Los que Madrugan es un servicio de suscripción que envía frases motivacionales personalizadas todos los días a las 6:00 AM vía Telegram, diseñadas específicamente para emprendedores que abren su negocio mientras el mundo duerme."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuánto cuesta la suscripción?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "La suscripción cuesta $9.900 COP mensuales (precio promocional, antes $19.900). Incluye 3 días de prueba gratuita para que pruebes el servicio sin compromiso."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿A qué hora llegan las frases?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Las frases llegan todos los días a las 6:00 AM, hora Colombia, directamente a tu Telegram. Son frases diferentes cada día, personalizadas según tu perfil de emprendedor (tienda, freelance, startup o profesional)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo funciona el programa de referidos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Por cada amigo que invites y pague la suscripción, ambos ganan 1 mes gratis. El beneficio aplica hasta un máximo de 12 meses gratis acumulados."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

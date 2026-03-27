@@ -7,6 +7,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { PERFILES, TESTIMONIALS, FAQS, FEATURES } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { cn } from '@/lib/utils';
+import { LandingPageSEO } from '@/components/SEO';
+import { FAQSchema, defaultFAQs } from '@/components/FAQSchema';
 import type { Perfil } from '@/types';
 
 // Navigation Component
@@ -47,11 +49,14 @@ function Navigation() {
             <button onClick={() => scrollTo('como-funciona')} className="text-gray-300 hover:text-white transition-colors text-sm">
               Cómo funciona
             </button>
+            <a href="/blog" className="text-gray-300 hover:text-white transition-colors text-sm">
+              Blog
+            </a>
+            <a href="/testimonios" className="text-gray-300 hover:text-white transition-colors text-sm">
+              Testimonios
+            </a>
             <button onClick={() => scrollTo('precio')} className="text-gray-300 hover:text-white transition-colors text-sm">
               Precio
-            </button>
-            <button onClick={() => scrollTo('faq')} className="text-gray-300 hover:text-white transition-colors text-sm">
-              FAQ
             </button>
             <a href="/empezar">
               <Button className="bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-full px-6">
@@ -72,11 +77,14 @@ function Navigation() {
                 <button onClick={() => scrollTo('como-funciona')} className="text-gray-300 hover:text-white transition-colors text-left">
                   Cómo funciona
                 </button>
+                <a href="/blog" className="text-gray-300 hover:text-white transition-colors text-left">
+                  Blog
+                </a>
+                <a href="/testimonios" className="text-gray-300 hover:text-white transition-colors text-left">
+                  Testimonios
+                </a>
                 <button onClick={() => scrollTo('precio')} className="text-gray-300 hover:text-white transition-colors text-left">
                   Precio
-                </button>
-                <button onClick={() => scrollTo('faq')} className="text-gray-300 hover:text-white transition-colors text-left">
-                  FAQ
                 </button>
                 <a href="/empezar">
                   <Button className="bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-full w-full">
@@ -191,7 +199,7 @@ function HeroSection({ onSelectPerfil }: { onSelectPerfil: (p: Perfil) => void }
                 size="lg" 
                 className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-lg rounded-full px-8 py-6 glow-amber"
               >
-                Empezar ahora - $19.9k/mes
+                Empezar ahora - $9.9k/mes
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </a>
@@ -283,8 +291,14 @@ function PricingSection() {
           className="glass-strong rounded-[2rem] p-8 md:p-12 text-center"
         >
           <div className="mb-8">
-            <span className="text-6xl md:text-7xl font-black text-white">$19.900</span>
-            <span className="text-gray-400 text-xl ml-2">COP/mes</span>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <span className="text-3xl md:text-4xl text-gray-500 line-through">$19.900</span>
+              <span className="text-6xl md:text-7xl font-black text-amber-400">$9.900</span>
+              <span className="text-gray-400 text-xl">COP/mes</span>
+            </div>
+            <div className="mt-2">
+              <span className="inline-block px-3 py-1 bg-red-500/20 text-red-400 text-sm rounded-full">🔥 50% OFF - Oferta de lanzamiento</span>
+            </div>
           </div>
 
           <ul className="space-y-4 mb-10 max-w-md mx-auto text-left">
@@ -490,17 +504,28 @@ function Footer() {
             <h4 className="text-white font-semibold mb-4">Producto</h4>
             <ul className="space-y-2">
               <li><button onClick={() => document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })} className="text-gray-500 hover:text-white transition-colors">Cómo funciona</button></li>
+              <li><a href="/blog" className="text-gray-500 hover:text-white transition-colors">Blog</a></li>
+              <li><a href="/testimonios" className="text-gray-500 hover:text-white transition-colors">Testimonios</a></li>
               <li><button onClick={() => document.getElementById('precio')?.scrollIntoView({ behavior: 'smooth' })} className="text-gray-500 hover:text-white transition-colors">Precio</button></li>
-              <li><button onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })} className="text-gray-500 hover:text-white transition-colors">FAQ</button></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="text-white font-semibold mb-4">Contacto</h4>
+            <ul className="space-y-2">
+              <li className="text-gray-500 text-sm">📍 Bogotá, Colombia</li>
+              <li><a href="mailto:hola@losquemadrugan.co" className="text-gray-500 hover:text-white transition-colors text-sm">✉️ hola@losquemadrugan.co</a></li>
+              <li><a href="https://t.me/MadrugadoresBot" className="text-gray-500 hover:text-white transition-colors text-sm">💬 @MadrugadoresBot</a></li>
+              <li className="text-gray-600 text-xs mt-2">Horario: 6:00 AM - 8:00 PM</li>
             </ul>
           </div>
           
           <div>
             <h4 className="text-white font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
+              <li><button onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })} className="text-gray-500 hover:text-white transition-colors">FAQ</button></li>
               <li><a href="#" className="text-gray-500 hover:text-white transition-colors">Términos</a></li>
               <li><a href="#" className="text-gray-500 hover:text-white transition-colors">Privacidad</a></li>
-              <li><a href="mailto:hola@losquemadrugan.co" className="text-gray-500 hover:text-white transition-colors">Contacto</a></li>
             </ul>
           </div>
         </div>
@@ -530,6 +555,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#0B0F17]">
+      <LandingPageSEO />
+      <FAQSchema faqs={defaultFAQs} />
       <Navigation />
       <HeroSection onSelectPerfil={handleSelectPerfil} />
       <FeaturesSection />
