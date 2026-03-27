@@ -1,15 +1,11 @@
 {
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
-      ]
-    }
+  "crons": [
+    { "path": "/api/envio-masivo?key=admin2025", "schedule": "30 10 * * *" },
+    { "path": "/api/resumen-admin", "schedule": "0 23 * * *" },
+    { "path": "/api/limpieza-inactivos", "schedule": "0 8 1 * *" }
   ]
 }
