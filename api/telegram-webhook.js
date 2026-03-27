@@ -117,7 +117,7 @@ export default async function handler(req, res) {
 
       if (!existing) {
         const codigoReferidoNuevo = generarCodigoReferido(userName, targetChatId);
-        await supabase.from('suscriptores').insert({
+        const { data: nuevoUsuario, error: insertError } = await supabase.from('suscriptores').insert({
           telegram_chat_id: targetChatId,
           nombre: userName,
           estado: 'prospecto',
@@ -125,7 +125,37 @@ export default async function handler(req, res) {
           referido_por: referidoPor,
           trial_usado: false,
           creado_en: new Date().toISOString()
-        });
+        }).select('id').single();
+
+        if (insertError) {
+          throw insertError;
+        }
+
+        if (referidoPor && nuevoUsuario?.id) {
+          const { data: invitadorRef } = await supabase
+            .from('suscriptores')
+            .select('id')
+            .eq('codigo_referido', referidoPor)
+            .single();
+
+          if (invitadorRef?.id) {
+            const { data: existingLog } = await supabase
+              .from('referidos_log')
+              .select('id')
+              .eq('invitador_id', invitadorRef.id)
+              .eq('invitado_id', nuevoUsuario.id)
+              .maybeSingle();
+
+            if (!existingLog) {
+              await supabase.from('referidos_log').insert({
+                invitador_id: invitadorRef.id,
+                invitado_id: nuevoUsuario.id,
+                estado: 'registrado',
+                creado_en: new Date().toISOString(),
+              });
+            }
+          }
+        }
       } else if (!existing.codigo_referido) {
         await ensureReferralCode(existing);
       }
